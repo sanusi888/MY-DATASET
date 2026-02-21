@@ -82,10 +82,12 @@ python dynamics_nav_financial_dataset_generator.py --rows 10000 --seed 42
 ## Validation Checks
 
 During execution, the script validates:
-- Non-empty financial output
+- Non-empty financial and audit outputs
 - Unique `Document_No` per financial record
 - FX consistency (`Amount * FX_Rate == Amount_Group_Currency`, rounded)
+- `Days_Overdue` consistency against `Due_Date` and fixed `AS_OF_DATE`
 - Presence of `Intercompany_To` for intercompany rows
+- Intercompany `Counterparty_ID` alignment with `Intercompany_To`
 - Audit-document referential integrity against the financial dataset
 
 If validation succeeds, the script prints:

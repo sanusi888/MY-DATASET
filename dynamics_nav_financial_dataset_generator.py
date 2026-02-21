@@ -316,9 +316,12 @@ def generate_audit_journals(df_financial: pd.DataFrame, output_path: Optional[st
 
 
 def validate_dataset(df_financial: pd.DataFrame, df_audit: pd.DataFrame) -> None:
-    """Run basic consistency checks to make deployment safer."""
+    """Run consistency checks to make deployment safer."""
     if len(df_financial) == 0:
         raise ValueError("Financial dataset is empty.")
+    if len(df_audit) == 0:
+        raise ValueError("Audit dataset is empty.")
+
     if df_financial["Document_No"].nunique() != len(df_financial):
         raise ValueError("Duplicate Document_No values detected.")
 
@@ -326,11 +329,18 @@ def validate_dataset(df_financial: pd.DataFrame, df_audit: pd.DataFrame) -> None
     if not amount_check.equals(df_financial["Amount_Group_Currency"]):
         raise ValueError("Amount_Group_Currency mismatch detected.")
 
+    due_dates = pd.to_datetime(df_financial["Due_Date"])
+    expected_days_overdue = (AS_OF_DATE - due_dates).dt.days.clip(lower=0)
+    if not expected_days_overdue.equals(df_financial["Days_Overdue"]):
+        raise ValueError("Days_Overdue mismatch detected.")
+
     interco = df_financial[df_financial["Intercompany_Flag"] == 1]
     if (interco["Intercompany_To"] == "").any():
         raise ValueError("Intercompany rows missing Intercompany_To.")
+    if not interco.empty and not interco["Counterparty_ID"].equals(interco["Intercompany_To"]):
+        raise ValueError("Intercompany Counterparty_ID must match Intercompany_To.")
 
-    if df_audit["Document_No"].isin(df_financial["Document_No"]).mean() < 1:
+    if not df_audit["Document_No"].isin(df_financial["Document_No"]).all():
         raise ValueError("Audit contains unknown Document_No values.")
 
 
