@@ -6,8 +6,8 @@ Professional synthetic dataset generator for enterprise ERP finance simulation, 
 
 This project generates two portfolio-ready CSV outputs:
 
-1. **Financial Ledger Dataset** (`Dynamics_NAV_Financials_150K_Enterprise.csv`)
-2. **Audit Journal Dataset** (`Dynamics_NAV_Audit_Journals_150K_Enterprise.csv`)
+1. **Financial Ledger Dataset** (`Dynamics_NAV_Financials_<rows>_Enterprise.csv`)
+2. **Audit Journal Dataset** (`Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`)
 
 The generator is intended for:
 - Analytics and BI portfolio projects
@@ -31,7 +31,7 @@ The generator is intended for:
 ## Output Files
 
 ### 1) Financial Dataset
-**Filename:** `Dynamics_NAV_Financials_150K_Enterprise.csv`
+**Filename pattern:** `Dynamics_NAV_Financials_<rows>_Enterprise.csv`
 
 Representative columns include:
 - Transaction identity: `Document_No`, `Posting_Date`, `Transaction_Type`
@@ -44,7 +44,7 @@ Representative columns include:
 - Intercompany: `Intercompany_Flag`, `Intercompany_To`, `Counterparty_ID`
 
 ### 2) Audit Journals
-**Filename:** `Dynamics_NAV_Audit_Journals_150K_Enterprise.csv`
+**Filename pattern:** `Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`
 
 Representative columns include:
 - `Audit_ID`, `Document_No`, `Action_Type`
@@ -70,6 +70,11 @@ pip install pandas numpy
 python dynamics_nav_financial_dataset_generator.py
 ```
 
+### Optional runtime controls
+```bash
+python dynamics_nav_financial_dataset_generator.py --rows 10000 --seed 42
+```
+
 ## Validation Checks
 
 During execution, the script validates:
@@ -89,7 +94,7 @@ Validation checks passed.
 
 - Default output volume is **150,000** rows for the financial dataset.
 - Keep this default for full-scale portfolio/demonstration output.
-- Optional lower volumes (if later parameterized) should be used only for faster smoke tests.
+- Optional lower volumes (`--rows`) should be used only for faster smoke tests.
 
 ## Copyright
 

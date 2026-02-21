@@ -7,6 +7,7 @@ for portfolio, training, IFRS reporting, SOP compliance, treasury, cost accounti
 Date: 2026-02-21
 """
 
+import argparse
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -133,7 +134,7 @@ def _aging_bucket(days_overdue: int) -> str:
     return "90+"
 
 
-def generate_financial_dataset(total_rows: int = TOTAL_ROWS) -> pd.DataFrame:
+def generate_financial_dataset(total_rows: int = TOTAL_ROWS, output_path: str | None = None) -> pd.DataFrame:
     rows = []
 
     for i in range(total_rows):
@@ -220,12 +221,15 @@ def generate_financial_dataset(total_rows: int = TOTAL_ROWS) -> pd.DataFrame:
         rows[idx]["Amount_Group_Currency"] = round(rows[idx]["Amount"] * rows[idx]["FX_Rate"], 2)
 
     df_financial = pd.DataFrame(rows)
-    df_financial.to_csv("Dynamics_NAV_Financials_150K_Enterprise.csv", index=False)
+    if output_path is None:
+        output_path = f"Dynamics_NAV_Financials_{total_rows}_Enterprise.csv"
+
+    df_financial.to_csv(output_path, index=False)
     print("Financial dataset generated successfully!")
     return df_financial
 
 
-def generate_audit_journals(df_financial: pd.DataFrame) -> pd.DataFrame:
+def generate_audit_journals(df_financial: pd.DataFrame, output_path: str | None = None) -> pd.DataFrame:
     audit_rows = []
     audit_id = 1
 
@@ -294,7 +298,10 @@ def generate_audit_journals(df_financial: pd.DataFrame) -> pd.DataFrame:
             audit_id += 1
 
     df_audit = pd.DataFrame(audit_rows)
-    df_audit.to_csv("Dynamics_NAV_Audit_Journals_150K_Enterprise.csv", index=False)
+    if output_path is None:
+        output_path = f"Dynamics_NAV_Audit_Journals_{len(df_financial)}_Enterprise.csv"
+
+    df_audit.to_csv(output_path, index=False)
     print("Audit journals dataset generated successfully!")
     return df_audit
 
@@ -318,8 +325,31 @@ def validate_dataset(df_financial: pd.DataFrame, df_audit: pd.DataFrame) -> None
         raise ValueError("Audit contains unknown Document_No values.")
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate Dynamics NAV synthetic financial and audit datasets.")
+    parser.add_argument(
+        "--rows",
+        type=int,
+        default=TOTAL_ROWS,
+        help=f"Number of financial rows to generate (default: {TOTAL_ROWS}).",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed used for deterministic generation (default: 42).",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    df_financial = generate_financial_dataset()
+    args = parse_args()
+    if args.rows <= 0:
+        raise ValueError("--rows must be a positive integer.")
+
+    np.random.seed(args.seed)
+
+    df_financial = generate_financial_dataset(total_rows=args.rows)
     df_audit = generate_audit_journals(df_financial)
     validate_dataset(df_financial, df_audit)
     print("Validation checks passed.")
