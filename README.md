@@ -6,8 +6,8 @@ Professional synthetic dataset generator for enterprise ERP finance simulation, 
 
 This project generates two portfolio-ready CSV outputs:
 
-1. **Financial Ledger Dataset** (`Dynamics_NAV_Financials_<rows>_Enterprise.csv`)
-2. **Audit Journal Dataset** (`Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`)
+1. **Financial Ledger Dataset** (`Dynamics_NAV_Financials_150K_Enterprise.csv` by default, otherwise `Dynamics_NAV_Financials_<rows>_Enterprise.csv`)
+2. **Audit Journal Dataset** (`Dynamics_NAV_Audit_Journals_150K_Enterprise.csv` by default, otherwise `Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`)
 
 The generator is intended for:
 - Analytics and BI portfolio projects
@@ -31,7 +31,9 @@ The generator is intended for:
 ## Output Files
 
 ### 1) Financial Dataset
-**Filename pattern:** `Dynamics_NAV_Financials_<rows>_Enterprise.csv`
+**Filename:** `Dynamics_NAV_Financials_150K_Enterprise.csv` (default)
+
+**Non-default pattern:** `Dynamics_NAV_Financials_<rows>_Enterprise.csv`
 
 Representative columns include:
 - Transaction identity: `Document_No`, `Posting_Date`, `Transaction_Type`
@@ -44,7 +46,9 @@ Representative columns include:
 - Intercompany: `Intercompany_Flag`, `Intercompany_To`, `Counterparty_ID`
 
 ### 2) Audit Journals
-**Filename pattern:** `Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`
+**Filename:** `Dynamics_NAV_Audit_Journals_150K_Enterprise.csv` (default)
+
+**Non-default pattern:** `Dynamics_NAV_Audit_Journals_<rows>_Enterprise.csv`
 
 Representative columns include:
 - `Audit_ID`, `Document_No`, `Action_Type`

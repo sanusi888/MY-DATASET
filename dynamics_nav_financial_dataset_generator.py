@@ -9,6 +9,7 @@ Date: 2026-02-21
 
 import argparse
 from datetime import datetime, timedelta
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -134,7 +135,7 @@ def _aging_bucket(days_overdue: int) -> str:
     return "90+"
 
 
-def generate_financial_dataset(total_rows: int = TOTAL_ROWS, output_path: str | None = None) -> pd.DataFrame:
+def generate_financial_dataset(total_rows: int = TOTAL_ROWS, output_path: Optional[str] = None) -> pd.DataFrame:
     rows = []
 
     for i in range(total_rows):
@@ -222,14 +223,18 @@ def generate_financial_dataset(total_rows: int = TOTAL_ROWS, output_path: str | 
 
     df_financial = pd.DataFrame(rows)
     if output_path is None:
-        output_path = f"Dynamics_NAV_Financials_{total_rows}_Enterprise.csv"
+        output_path = (
+            "Dynamics_NAV_Financials_150K_Enterprise.csv"
+            if total_rows == TOTAL_ROWS
+            else f"Dynamics_NAV_Financials_{total_rows}_Enterprise.csv"
+        )
 
     df_financial.to_csv(output_path, index=False)
     print("Financial dataset generated successfully!")
     return df_financial
 
 
-def generate_audit_journals(df_financial: pd.DataFrame, output_path: str | None = None) -> pd.DataFrame:
+def generate_audit_journals(df_financial: pd.DataFrame, output_path: Optional[str] = None) -> pd.DataFrame:
     audit_rows = []
     audit_id = 1
 
@@ -299,7 +304,11 @@ def generate_audit_journals(df_financial: pd.DataFrame, output_path: str | None 
 
     df_audit = pd.DataFrame(audit_rows)
     if output_path is None:
-        output_path = f"Dynamics_NAV_Audit_Journals_{len(df_financial)}_Enterprise.csv"
+        output_path = (
+            "Dynamics_NAV_Audit_Journals_150K_Enterprise.csv"
+            if len(df_financial) == TOTAL_ROWS
+            else f"Dynamics_NAV_Audit_Journals_{len(df_financial)}_Enterprise.csv"
+        )
 
     df_audit.to_csv(output_path, index=False)
     print("Audit journals dataset generated successfully!")
