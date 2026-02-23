@@ -102,6 +102,39 @@ Validation checks passed.
 - Keep this default for full-scale portfolio/demonstration output.
 - Optional lower volumes (`--rows`) should be used only for faster smoke tests.
 
+
+## Scalable Analytics Stack (ETL + SQL + DAX)
+
+This repository includes production-style assets to operationalize analytics beyond raw CSV files:
+
+- `etl_nav_analytics_pipeline.py`
+  - Builds a star-schema-ready model (`DimDate`, `DimAccount`, `DimDepartment`, `DimSubsidiary`, `FactFinancial`, `FactAudit`) plus `KpiMonthly` aggregate output.
+  - Supports `--output-format parquet|csv` for scalable storage choices.
+
+- `sql/nav_analytics_schema.sql`
+  - SQL Server warehouse DDL for dimensions/facts, indexes, and a ratio base view `vw_Financial_Ratio_Base`.
+
+- `dax/nav_ratio_measures.dax`
+  - Ready-to-use ratio measures (Gross Margin %, Operating Margin %, OPEX Ratio %, COGS Ratio %, Approval/Posted rates, intercompany ratios).
+
+### ETL run example
+
+```bash
+python etl_nav_analytics_pipeline.py \
+  --financial-csv Dynamics_NAV_Financials_150K_Enterprise.csv \
+  --audit-csv Dynamics_NAV_Audit_Journals_150K_Enterprise.csv \
+  --output-dir analytics_output \
+  --output-format parquet
+```
+
+### Scalable implementation steps
+
+1. Generate validated source CSVs from the dataset generator.
+2. Run `etl_nav_analytics_pipeline.py` to materialize star-schema analytics tables.
+3. Load model tables into SQL Server using `sql/nav_analytics_schema.sql`.
+4. Connect Power BI to SQL model/facts and paste measures from `dax/nav_ratio_measures.dax`.
+5. Schedule ETL (Task Scheduler / CI runner) and monitor row-count + integrity checks each run.
+
 ## Copyright
 
 © 2026 Sanusi Opeyemi Sanusi. All rights reserved.

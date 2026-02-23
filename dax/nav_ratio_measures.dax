@@ -1,0 +1,62 @@
+-- Core financial totals
+[Total Revenue] =
+CALCULATE(
+    SUM(FactFinancial[Amount_Group_Currency]),
+    DimAccount[Category] = "Revenue"
+)
+
+[Total COGS] =
+CALCULATE(
+    SUMX(FactFinancial, ABS(FactFinancial[Amount_Group_Currency])),
+    DimAccount[Category] = "COGS"
+)
+
+[Total OPEX] =
+CALCULATE(
+    SUMX(FactFinancial, ABS(FactFinancial[Amount_Group_Currency])),
+    DimAccount[Category] = "OPEX"
+)
+
+[Gross Profit] = [Total Revenue] - [Total COGS]
+
+[Net Operating Profit] = [Gross Profit] - [Total OPEX]
+
+-- Ratio analysis
+[Gross Margin %] =
+DIVIDE([Gross Profit], [Total Revenue], 0)
+
+[Operating Margin %] =
+DIVIDE([Net Operating Profit], [Total Revenue], 0)
+
+[OPEX Ratio %] =
+DIVIDE([Total OPEX], [Total Revenue], 0)
+
+[COGS Ratio %] =
+DIVIDE([Total COGS], [Total Revenue], 0)
+
+[Intercompany Volume] =
+CALCULATE(
+    SUMX(FactFinancial, ABS(FactFinancial[Amount_Group_Currency])),
+    FactFinancial[Intercompany_Flag] = 1
+)
+
+[Intercompany % of Revenue] =
+DIVIDE([Intercompany Volume], [Total Revenue], 0)
+
+-- Activity / control ratios
+[Total Transactions] = COUNTROWS(FactFinancial)
+
+[Posted Transactions] =
+CALCULATE(
+    COUNTROWS(FactFinancial),
+    FactFinancial[Status] = "Posted"
+)
+
+[Approval Rate %] =
+DIVIDE(
+    CALCULATE(COUNTROWS(FactFinancial), FactFinancial[Approved] = 1),
+    [Total Transactions],
+    0
+)
+
+[Posted Rate %] = DIVIDE([Posted Transactions], [Total Transactions], 0)
